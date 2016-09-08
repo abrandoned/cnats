@@ -17,6 +17,14 @@ module NATSFFI
   ffi_lib_flags :now, :global
   ffi_lib File.expand_path("./libnats.so", File.dirname(__FILE__))
 
+  enum :NATS_CONN_STATUS, [
+    :DISCONNECTED, 0,  #///< The connection has been disconnected
+    :CONNECTING,       #///< The connection is in the process or connecting
+    :CONNECTED,        #///< The connection is connected
+    :CLOSED,           #///< The connection is closed
+    :RECONNECTING      #///< The connection is in the process or reconnecting
+  ]
+
   enum :NATS_STATUS, [
     :NATS_OK, 0,                     #< Success
     :NATS_ERR,                       #< Generic error
@@ -73,14 +81,34 @@ module NATSFFI
   attach_function :natsConnection_ConnectTo, [:pointer, :string], :int
   attach_function :natsConnection_Destroy, [:pointer], :void
   attach_function :natsConnection_Flush, [:pointer], :int
+  attach_function :natsConnection_GetConnectedServerId, [:pointer, :buffer_out, :size_t], :int
+  attach_function :natsConnection_GetConnectedUrl, [:pointer, :buffer_out, :size_t], :int
+  attach_function :natsConnection_GetLastError, [:pointer, :pointer], :int
+  attach_function :natsConnection_GetMaxPayload, [:pointer], :int64
+  attach_function :natsConnection_GetStats, [:pointer, :pointer], :int
   attach_function :natsConnection_IsClosed, [:pointer], :bool
   attach_function :natsConnection_IsReconnecting, [:pointer], :bool
+  attach_function :natsConnection_Publish, [:pointer, :string, :pointer, :int], :int
+  attach_function :natsConnection_PublishMsg, [:pointer, :pointer], :int
+  attach_function :natsConnection_PublishRequest, [:pointer, :string, :string, :string, :pointer, :int], :int
+  attach_function :natsConnection_PublishRequestString, [:pointer, :string, :string, :string], :int
   attach_function :natsConnection_PublishString, [:pointer, :string, :string], :void
-  attach_function :natsConnection_Request, [:pointer, :pointer, :string, :string, :int, :int64], :void
-  attach_function :natsConnection_RequestString, [:pointer, :pointer, :string, :string, :int64], :void
-  attach_function :natsConnection_Subscribe, [:pointer, :pointer, :string, :on_message_function, :pointer], :void
+  attach_function :natsConnection_Request, [:pointer, :pointer, :string, :string, :int, :int64], :int
+  attach_function :natsConnection_RequestString, [:pointer, :pointer, :string, :string, :int64], :int
+  attach_function :natsConnection_Status, [:pointer], :int
+  attach_function :natsConnection_Subscribe, [:pointer, :pointer, :string, :on_message_function, :pointer], :int
+  attach_function :natsConnection_SubscribeSync, [:pointer, :pointer, :string], :int
+  attach_function :natsConnection_SubscribeTimeout, [:pointer, :pointer, :string, :int64, :on_message_function, :pointer], :int
+  attach_function :natsConnection_QueueSubscribe, [:pointer, :pointer, :string, :string, :on_message_function, :pointer], :int
+  attach_function :natsConnection_QueueSubscribeSync, [:pointer, :pointer, :string, :string], :int
+  attach_function :natsConnection_QueueSubscribeTimeout, [:pointer, :pointer, :string, :string, :int64, :on_message_function, :pointer], :int
+
+  # natsInbox
+  attach_function :natsInbox_Create, [:pointer], :int
+  attach_function :natsInbox_Destroy, [:pointer], :void
 
   # natsMsg
+  attach_function :natsMsg_Create, [:pointer, :string, :string, :string, :int], :int
   attach_function :natsMsg_Destroy, [:pointer], :void
   attach_function :natsMsg_GetSubject, [:pointer], :strptr
   attach_function :natsMsg_GetReply, [:pointer], :strptr
@@ -118,10 +146,19 @@ module NATSFFI
   attach_function :natsOptions_UseGlobalMessageDelivery, [:pointer, :bool], :void
 
   # natsSubscription
-  attach_function :natsSubscription_AutoUnsubscribe, [:pointer, :int], :void
+  attach_function :natsSubscription_AutoUnsubscribe, [:pointer, :int], :int
+  attach_function :natsSubscription_ClearMaxPending, [:pointer], :int
   attach_function :natsSubscription_Destroy, [:pointer], :void
+  attach_function :natsSubscription_GetDelivered, [:pointer, :pointer], :int
+  attach_function :natsSubscription_GetDropped, [:pointer, :pointer], :int
+  attach_function :natsSubscription_GetMaxPending, [:pointer, :pointer, :pointer], :int
+  attach_function :natsSubscription_GetPending, [:pointer, :pointer, :pointer], :int
+  attach_function :natsSubscription_GetPendingLimits, [:pointer, :pointer, :pointer], :int
+  attach_function :natsSubscription_GetStats, [:pointer, :pointer, :pointer, :pointer, :pointer, :pointer, :pointer], :int
   attach_function :natsSubscription_IsValid, [:pointer], :bool
-  attach_function :natsSubscription_Unsubscribe, [:pointer], :void
+  attach_function :natsSubscription_NextMsg, [:pointer, :pointer, :int64], :int
+  attach_function :natsSubscription_SetPendingLimits, [:pointer, :int, :int], :int
+  attach_function :natsSubscription_Unsubscribe, [:pointer], :int
 
   # natsStatistics
   attach_function :natsStatistics_Create, [:pointer], :int
