@@ -15,7 +15,7 @@ end
 module NATSFFI
   extend FFI::Library
   ffi_lib_flags :now, :global
-  ffi_lib File.expand_path("./libnats.so", File.dirname(__FILE__))
+  ffi_lib File.expand_path("./libnats.#{FFI::Platform::LIBSUFFIX}", File.dirname(__FILE__))
 
   enum :NATS_CONN_STATUS, [
     :DISCONNECTED, 0,  #///< The connection has been disconnected
@@ -62,111 +62,111 @@ module NATSFFI
   callback :on_message_function, [:pointer, :pointer, :pointer, :pointer], :void
 
   # nats
-  attach_function :nats_Close, [], :void
-  attach_function :nats_GetLastError, [:pointer], :strptr
-  attach_function :nats_GetLastErrorStack, [:buffer_out, :size_t], :int
-  attach_function :nats_GetVersion, [], :strptr
-  attach_function :nats_GetVersionNumber, [], :uint32
-  attach_function :nats_Now, [], :int64
-  attach_function :nats_NowInNanoSeconds, [], :int64
-  attach_function :nats_Open, [:int64], :int
+  attach_function :nats_Close, [], :void, :blocking => true
+  attach_function :nats_GetLastError, [:pointer], :strptr, :blocking => true
+  attach_function :nats_GetLastErrorStack, [:buffer_out, :size_t], :int, :blocking => true
+  attach_function :nats_GetVersion, [], :strptr, :blocking => true
+  attach_function :nats_GetVersionNumber, [], :uint32, :blocking => true
+  attach_function :nats_Now, [], :int64, :blocking => true
+  attach_function :nats_NowInNanoSeconds, [], :int64, :blocking => true
+  attach_function :nats_Open, [:int64], :int, :blocking => true
   # attach_function :nats_PrintLastErrorStack, [:pointer], :void
-  attach_function :nats_SetMessageDeliveryPoolSize, [:int], :int
-  attach_function :nats_Sleep, [:int64], :void
+  attach_function :nats_SetMessageDeliveryPoolSize, [:int], :int, :blocking => true
+  attach_function :nats_Sleep, [:int64], :void, :blocking => true
 
   # natsConnection
-  attach_function :natsConnection_Buffered, [:pointer], :int
-  attach_function :natsConnection_Close, [:pointer], :void
-  attach_function :natsConnection_Connect, [:pointer, :pointer], :int
-  attach_function :natsConnection_ConnectTo, [:pointer, :string], :int
-  attach_function :natsConnection_Destroy, [:pointer], :void
-  attach_function :natsConnection_Flush, [:pointer], :int
-  attach_function :natsConnection_GetConnectedServerId, [:pointer, :buffer_out, :size_t], :int
-  attach_function :natsConnection_GetConnectedUrl, [:pointer, :buffer_out, :size_t], :int
-  attach_function :natsConnection_GetLastError, [:pointer, :pointer], :int
-  attach_function :natsConnection_GetMaxPayload, [:pointer], :int64
-  attach_function :natsConnection_GetStats, [:pointer, :pointer], :int
-  attach_function :natsConnection_IsClosed, [:pointer], :bool
-  attach_function :natsConnection_IsReconnecting, [:pointer], :bool
-  attach_function :natsConnection_Publish, [:pointer, :string, :pointer, :int], :int
-  attach_function :natsConnection_PublishMsg, [:pointer, :pointer], :int
-  attach_function :natsConnection_PublishRequest, [:pointer, :string, :string, :string, :pointer, :int], :int
-  attach_function :natsConnection_PublishRequestString, [:pointer, :string, :string, :string], :int
-  attach_function :natsConnection_PublishString, [:pointer, :string, :string], :void
-  attach_function :natsConnection_Request, [:pointer, :pointer, :string, :string, :int, :int64], :int
-  attach_function :natsConnection_RequestString, [:pointer, :pointer, :string, :string, :int64], :int
-  attach_function :natsConnection_Status, [:pointer], :int
-  attach_function :natsConnection_Subscribe, [:pointer, :pointer, :string, :on_message_function, :pointer], :int
-  attach_function :natsConnection_SubscribeSync, [:pointer, :pointer, :string], :int
-  attach_function :natsConnection_SubscribeTimeout, [:pointer, :pointer, :string, :int64, :on_message_function, :pointer], :int
-  attach_function :natsConnection_QueueSubscribe, [:pointer, :pointer, :string, :string, :on_message_function, :pointer], :int
-  attach_function :natsConnection_QueueSubscribeSync, [:pointer, :pointer, :string, :string], :int
-  attach_function :natsConnection_QueueSubscribeTimeout, [:pointer, :pointer, :string, :string, :int64, :on_message_function, :pointer], :int
+  attach_function :natsConnection_Buffered, [:pointer], :int, :blocking => true
+  attach_function :natsConnection_Close, [:pointer], :void, :blocking => true
+  attach_function :natsConnection_Connect, [:pointer, :pointer], :int, :blocking => true
+  attach_function :natsConnection_ConnectTo, [:pointer, :string], :int, :blocking => true
+  attach_function :natsConnection_Destroy, [:pointer], :void, :blocking => true
+  attach_function :natsConnection_Flush, [:pointer], :int, :blocking => true
+  attach_function :natsConnection_GetConnectedServerId, [:pointer, :buffer_out, :size_t], :int, :blocking => true
+  attach_function :natsConnection_GetConnectedUrl, [:pointer, :buffer_out, :size_t], :int, :blocking => true
+  attach_function :natsConnection_GetLastError, [:pointer, :pointer], :int, :blocking => true
+  attach_function :natsConnection_GetMaxPayload, [:pointer], :int64, :blocking => true
+  attach_function :natsConnection_GetStats, [:pointer, :pointer], :int, :blocking => true
+  attach_function :natsConnection_IsClosed, [:pointer], :bool, :blocking => true
+  attach_function :natsConnection_IsReconnecting, [:pointer], :bool, :blocking => true
+  attach_function :natsConnection_Publish, [:pointer, :string, :pointer, :int], :int, :blocking => true
+  attach_function :natsConnection_PublishMsg, [:pointer, :pointer], :int, :blocking => true
+  attach_function :natsConnection_PublishRequest, [:pointer, :string, :string, :string, :pointer, :int], :int, :blocking => true
+  attach_function :natsConnection_PublishRequestString, [:pointer, :string, :string, :string], :int, :blocking => true
+  attach_function :natsConnection_PublishString, [:pointer, :string, :string], :void, :blocking => true
+  attach_function :natsConnection_Request, [:pointer, :pointer, :string, :string, :int, :int64], :int, :blocking => true
+  attach_function :natsConnection_RequestString, [:pointer, :pointer, :string, :string, :int64], :int, :blocking => true
+  attach_function :natsConnection_Status, [:pointer], :int, :blocking => true
+  attach_function :natsConnection_Subscribe, [:pointer, :pointer, :string, :on_message_function, :pointer], :int, :blocking => true
+  attach_function :natsConnection_SubscribeSync, [:pointer, :pointer, :string], :int, :blocking => true
+  attach_function :natsConnection_SubscribeTimeout, [:pointer, :pointer, :string, :int64, :on_message_function, :pointer], :int, :blocking => true
+  attach_function :natsConnection_QueueSubscribe, [:pointer, :pointer, :string, :string, :on_message_function, :pointer], :int, :blocking => true
+  attach_function :natsConnection_QueueSubscribeSync, [:pointer, :pointer, :string, :string], :int, :blocking => true
+  attach_function :natsConnection_QueueSubscribeTimeout, [:pointer, :pointer, :string, :string, :int64, :on_message_function, :pointer], :int, :blocking => true
 
   # natsInbox
-  attach_function :natsInbox_Create, [:pointer], :int
-  attach_function :natsInbox_Destroy, [:pointer], :void
+  attach_function :natsInbox_Create, [:pointer], :int, :blocking => true
+  attach_function :natsInbox_Destroy, [:pointer], :void, :blocking => true
 
   # natsMsg
-  attach_function :natsMsg_Create, [:pointer, :string, :string, :string, :int], :int
-  attach_function :natsMsg_Destroy, [:pointer], :void
-  attach_function :natsMsg_GetSubject, [:pointer], :strptr
-  attach_function :natsMsg_GetReply, [:pointer], :strptr
-  attach_function :natsMsg_GetData, [:pointer], :strptr
-  attach_function :natsMsg_GetDataLength, [:pointer], :int
+  attach_function :natsMsg_Create, [:pointer, :string, :string, :string, :int], :int, :blocking => true
+  attach_function :natsMsg_Destroy, [:pointer], :void, :blocking => true
+  attach_function :natsMsg_GetSubject, [:pointer], :strptr, :blocking => true
+  attach_function :natsMsg_GetReply, [:pointer], :strptr, :blocking => true
+  attach_function :natsMsg_GetData, [:pointer], :strptr, :blocking => true
+  attach_function :natsMsg_GetDataLength, [:pointer], :int, :blocking => true
 
   # natsNUID
-  attach_function :natsNUID_free, [], :void
-  attach_function :natsNUID_init, [], :void
-  attach_function :natsNUID_Next, [:string, :int], :void
+  attach_function :natsNUID_free, [], :void, :blocking => true
+  attach_function :natsNUID_init, [], :void, :blocking => true
+  attach_function :natsNUID_Next, [:string, :int], :void, :blocking => true
 
   # natsOptions
-  attach_function :natsOptions_Create, [:pointer], :int
-  attach_function :natsOptions_Destroy, [:pointer], :void
-  attach_function :natsOptions_IPResolutionOrder, [:pointer, :int], :int
-  attach_function :natsOptions_SetAllowReconnect, [:pointer, :bool], :int
-  attach_function :natsOptions_SetCiphers, [:pointer, :string], :int
-  attach_function :natsOptions_SetExpectedHostname, [:pointer, :string], :int
-  attach_function :natsOptions_SetMaxPingsOut, [:pointer, :int64], :int
-  attach_function :natsOptions_SetMaxPendingMsgs, [:pointer, :int], :int
-  attach_function :natsOptions_SetMaxReconnect, [:pointer, :int], :int
-  attach_function :natsOptions_SetReconnectBufSize, [:pointer, :int], :int
-  attach_function :natsOptions_SetReconnectWait, [:pointer, :int64], :int
-  attach_function :natsOptions_SetName, [:pointer, :string], :int
-  attach_function :natsOptions_SetNoRandomize, [:pointer, :bool], :int
-  attach_function :natsOptions_SetPedantic, [:pointer, :bool], :int
-  attach_function :natsOptions_SetPingInterval, [:pointer, :int64], :int
-  attach_function :natsOptions_SetSecure, [:pointer, :bool], :int
-  attach_function :natsOptions_SetServers, [:pointer, :pointer], :int
-  attach_function :natsOptions_SetTimeout, [:pointer, :int64], :int
-  attach_function :natsOptions_SetToken, [:pointer, :string], :int
-  attach_function :natsOptions_SetURL, [:pointer, :string], :int
-  attach_function :natsOptions_SetUserInfo, [:pointer, :string, :string], :int
-  attach_function :natsOptions_SetVerbose, [:pointer, :bool], :int
-  attach_function :natsOptions_UseGlobalMessageDelivery, [:pointer, :bool], :void
+  attach_function :natsOptions_Create, [:pointer], :int, :blocking => true
+  attach_function :natsOptions_Destroy, [:pointer], :void, :blocking => true
+  attach_function :natsOptions_IPResolutionOrder, [:pointer, :int], :int, :blocking => true
+  attach_function :natsOptions_SetAllowReconnect, [:pointer, :bool], :int, :blocking => true
+  attach_function :natsOptions_SetCiphers, [:pointer, :string], :int, :blocking => true
+  attach_function :natsOptions_SetExpectedHostname, [:pointer, :string], :int, :blocking => true
+  attach_function :natsOptions_SetMaxPingsOut, [:pointer, :int64], :int, :blocking => true
+  attach_function :natsOptions_SetMaxPendingMsgs, [:pointer, :int], :int, :blocking => true
+  attach_function :natsOptions_SetMaxReconnect, [:pointer, :int], :int, :blocking => true
+  attach_function :natsOptions_SetReconnectBufSize, [:pointer, :int], :int, :blocking => true
+  attach_function :natsOptions_SetReconnectWait, [:pointer, :int64], :int, :blocking => true
+  attach_function :natsOptions_SetName, [:pointer, :string], :int, :blocking => true
+  attach_function :natsOptions_SetNoRandomize, [:pointer, :bool], :int, :blocking => true
+  attach_function :natsOptions_SetPedantic, [:pointer, :bool], :int, :blocking => true
+  attach_function :natsOptions_SetPingInterval, [:pointer, :int64], :int, :blocking => true
+  attach_function :natsOptions_SetSecure, [:pointer, :bool], :int, :blocking => true
+  attach_function :natsOptions_SetServers, [:pointer, :pointer], :int, :blocking => true
+  attach_function :natsOptions_SetTimeout, [:pointer, :int64], :int, :blocking => true
+  attach_function :natsOptions_SetToken, [:pointer, :string], :int, :blocking => true
+  attach_function :natsOptions_SetURL, [:pointer, :string], :int, :blocking => true
+  attach_function :natsOptions_SetUserInfo, [:pointer, :string, :string], :int, :blocking => true
+  attach_function :natsOptions_SetVerbose, [:pointer, :bool], :int, :blocking => true
+  attach_function :natsOptions_UseGlobalMessageDelivery, [:pointer, :bool], :void, :blocking => true
 
   # natsSubscription
-  attach_function :natsSubscription_AutoUnsubscribe, [:pointer, :int], :int
-  attach_function :natsSubscription_ClearMaxPending, [:pointer], :int
-  attach_function :natsSubscription_Destroy, [:pointer], :void
-  attach_function :natsSubscription_GetDelivered, [:pointer, :pointer], :int
-  attach_function :natsSubscription_GetDropped, [:pointer, :pointer], :int
-  attach_function :natsSubscription_GetMaxPending, [:pointer, :pointer, :pointer], :int
-  attach_function :natsSubscription_GetPending, [:pointer, :pointer, :pointer], :int
-  attach_function :natsSubscription_GetPendingLimits, [:pointer, :pointer, :pointer], :int
-  attach_function :natsSubscription_GetStats, [:pointer, :pointer, :pointer, :pointer, :pointer, :pointer, :pointer], :int
-  attach_function :natsSubscription_IsValid, [:pointer], :bool
-  attach_function :natsSubscription_NextMsg, [:pointer, :pointer, :int64], :int
-  attach_function :natsSubscription_SetPendingLimits, [:pointer, :int, :int], :int
-  attach_function :natsSubscription_Unsubscribe, [:pointer], :int
+  attach_function :natsSubscription_AutoUnsubscribe, [:pointer, :int], :int, :blocking => true
+  attach_function :natsSubscription_ClearMaxPending, [:pointer], :int, :blocking => true
+  attach_function :natsSubscription_Destroy, [:pointer], :void, :blocking => true
+  attach_function :natsSubscription_GetDelivered, [:pointer, :pointer], :int, :blocking => true
+  attach_function :natsSubscription_GetDropped, [:pointer, :pointer], :int, :blocking => true
+  attach_function :natsSubscription_GetMaxPending, [:pointer, :pointer, :pointer], :int, :blocking => true
+  attach_function :natsSubscription_GetPending, [:pointer, :pointer, :pointer], :int, :blocking => true
+  attach_function :natsSubscription_GetPendingLimits, [:pointer, :pointer, :pointer], :int, :blocking => true
+  attach_function :natsSubscription_GetStats, [:pointer, :pointer, :pointer, :pointer, :pointer, :pointer, :pointer], :int, :blocking => true
+  attach_function :natsSubscription_IsValid, [:pointer], :bool, :blocking => true
+  attach_function :natsSubscription_NextMsg, [:pointer, :pointer, :int64], :int, :blocking => true
+  attach_function :natsSubscription_SetPendingLimits, [:pointer, :int, :int], :int, :blocking => true
+  attach_function :natsSubscription_Unsubscribe, [:pointer], :int, :blocking => true
 
   # natsStatistics
-  attach_function :natsStatistics_Create, [:pointer], :int
-  attach_function :natsStatistics_Destroy, [:pointer], :void
-  attach_function :natsStatistics_GetCounts, [:pointer, :pointer, :pointer, :pointer, :pointer, :pointer], :int
+  attach_function :natsStatistics_Create, [:pointer], :int, :blocking => true
+  attach_function :natsStatistics_Destroy, [:pointer], :void, :blocking => true
+  attach_function :natsStatistics_GetCounts, [:pointer, :pointer, :pointer, :pointer, :pointer, :pointer], :int, :blocking => true
 
   # natsStatus
-  attach_function :natsStatus_GetText, [:NATS_STATUS], :strptr
+  attach_function :natsStatus_GetText, [:NATS_STATUS], :strptr, :blocking => true
 
 
   SubscribeCallback = FFI::Function.new(:void, [:pointer, :pointer, :pointer, :pointer]) do |conn, sub, msg, closure|
@@ -256,8 +256,8 @@ module NATSFFI
 
   def self.test_request_reply
     start = Time.now
-    num_threads = 1
-    publish_per_thread = 10
+    num_threads = 4
+    publish_per_thread = 100_000
     threads = []
     subject = "hello"
     message = "world"
@@ -265,9 +265,16 @@ module NATSFFI
     message_size = message.size
 
     subscription = FFI::MemoryPointer.new :pointer
-    conn = FFI::MemoryPointer.new :pointer
-    NATSFFI.natsConnection_ConnectTo(conn, "nats://localhost:4222")
-    conn_t = conn.get_pointer(0)
+    opts_pointer = FFI::MemoryPointer.new :pointer
+    conn_t = FFI::MemoryPointer.new :pointer
+
+    NATSFFI.natsOptions_Create(opts_pointer)
+    opts_pointer = opts_pointer.get_pointer(0)
+    NATSFFI.natsOptions_SetURL(opts_pointer, "nats://localhost:4222")
+    NATSFFI.natsOptions_UseGlobalMessageDelivery(opts_pointer, true)
+
+    NATSFFI.natsConnection_Connect(conn_t, opts_pointer)
+    conn_t = conn_t.get_pointer(0)
     NATSFFI.natsConnection_Subscribe(subscription, conn_t, subject, NATSFFI::SubscribeCallback, nil)
     NATSFFI.natsConnection_Flush(conn_t)
 
